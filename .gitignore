@@ -1,0 +1,11 @@
+df/id_*.csv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.ipynb_checkpoints/
+.idea/
+.venv/
+env/
+
+
