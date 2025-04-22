@@ -22,16 +22,18 @@ df = pd.read_csv('df/whole_df.csv', index_col=False)
 
 # Фільтрація даних
 def data_filter(min_week, max_week, min_year, max_year, set, region, sort_ascending, sort_descending):
-    # Визначення регіону
+    # знаходимо індеск регіону за його назвою
     reg = [k for k, v in regions.items() if v == region][0]
+
     # Фільтр обраного регіону
     selected_df = df[(df['year'] >= min_year) & (df['year'] <= max_year) & (df['week'] >= min_week) & (df['week'] <= max_week) & (df['region'] == reg)]
-    selected_df = selected_df[['year','week',set]]
+    selected_df = selected_df[['year','week',set]]  # залишаємо тільки потрібні стовпці
 
     # Фільтр інших регіонів
     other_df = df[(df['year'] >= min_year) & (df['year'] <= max_year) & (df['week'] >= min_week) & (df['week'] <= max_week) & (df['region'] != reg)]
     other_df = other_df[['year','week',set]]
-    avg_df = other_df.groupby(['year','week'], as_index=False)[set].mean()
+    # обчислюється середнє значення set згруповане по 'year' і 'week'
+    avg_df = other_df.groupby(['year','week'], as_index=False)[set].mean() # as_index=False - не стануть індексами, а будуть звичайними стовпцями
 
     # Побудова графіків
     graph1, ax1 = plt.subplots(figsize=(10, 4))
@@ -43,11 +45,11 @@ def data_filter(min_week, max_week, min_year, max_year, set, region, sort_ascend
 
     # Сортування даних
     if sort_ascending and not sort_descending:
-        table = selected_df.sort_values(by=[set])
+        table = selected_df.sort_values(by=[set])  # зростання
     elif not sort_ascending and sort_descending:
-        table = selected_df.sort_values(by=[set], ascending=False)
+        table = selected_df.sort_values(by=[set], ascending=False)   # спадання
     else:
-        table = selected_df
+        table = selected_df  # просто без сортування
 
     return table, graph1, graph2
 
@@ -56,7 +58,7 @@ for k, v in default_values.items():
         st.session_state[k] = v
 
 # Оновлення чисел
-def nums_upd(value):
+def num_upd(value):
     st.session_state[f'min_{value}'] = st.session_state[f'slider_{value}'][0]
     st.session_state[f'max_{value}'] = st.session_state[f'slider_{value}'][1]
 
@@ -93,7 +95,6 @@ with col1:
     region = st.session_state['region']
     sort_ascending = st.session_state['sort_ascending']
     sort_descending = st.session_state['sort_descending']
-
     table, graph1, graph2 = data_filter(min_week, max_week, min_year, max_year, set, region, sort_ascending, sort_descending)
 
     with tab1:
@@ -111,11 +112,11 @@ with col2:
 
     # Слайдер для тижнів
     st.markdown("<hr>" '<b>Оберіть тижні</b>', unsafe_allow_html=True)
-    slider_week = st.slider(" ", min_value=1, max_value=52, key='slider_week', on_change=nums_upd, args=('week',))
+    slider_week = st.slider(" ", min_value=1, max_value=52, key='slider_week', on_change=num_upd, args=('week',))
 
     # Слайдер для років
     st.markdown("<hr>" '<b>Оберіть роки</b>', unsafe_allow_html=True)
-    slider_year = st.slider(" ", min_value=1982, max_value=2024, key='slider_year', on_change = nums_upd, args = ('year',))
+    slider_year = st.slider(" ", min_value=1982, max_value=2024, key='slider_year', on_change = num_upd, args = ('year',))
 
     # Режим сортування
     st.markdown("<hr>" '<b>Сортувати за:</b>', unsafe_allow_html=True)
@@ -124,8 +125,8 @@ with col2:
 
     # Скидання фільтрів
     st.markdown("<br>", unsafe_allow_html=True)
-    def reset_filters():
+    def drop_filters():
         for key in default_values:
             st.session_state.pop(key, None)
 
-    st.button("Очистити фільтри", on_click=reset_filters)
+    st.button("Очистити фільтри", on_click=drop_filters)
