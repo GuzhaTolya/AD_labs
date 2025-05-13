@@ -17,17 +17,9 @@ def moving_average(signal, value_range):  # функція фільтрації 
     return filtered
 
 def createSlider(id, min_val, max_val, step, val, label): # функція для створення слайдера
-    return html.Div([
-        html.Label(label),
-        dcc.Slider(
-            id=id,
-            min=min_val,
-            max=max_val,
-            step=step,
-            value=val,
-            marks={round(min_val, 2): str(round(min_val, 2)), round(max_val, 2): str(round(max_val, 2))},
-            tooltip={"placement": "top", "always_visible": True}
-        )
+    return html.Div([html.Label(label),dcc.Slider(id=id, min=min_val, max=max_val, step=step, value=val,
+                                                  marks={round(min_val, 2): str(round(min_val, 2)), round(max_val, 2): str(round(max_val, 2))},
+                                                  tooltip={"placement": "top", "always_visible": True})
     ])
 
 # ініціалізуємо наш додаток
